@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta http-equiv="refresh" content="10">
+
+<title>Kalshi BTC PRO</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <div class="card">
+
+        <h1>🚀 KALSHI BTC PRO</h1>
+
+        <div class="precio">
+
+            BTC
+
+            <h2>${{precio}}</h2>
+
+        </div>
+
+        <div class="senal" style="color:{{color}}">
+
+            {{senal}}
+
+        </div>
+
+        <div class="confianza">
+
+            <p>Confianza</p>
+
+            <h3>{{confianza}}%</h3>
+
+            <div class="barra">
+
+                <div class="relleno"
+                     style="width:{{confianza}}%; background:{{color}};">
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="contador">
+
+            <p>⏳ Próxima vela</p>
+
+            <h2>{{contador}}</h2>
+
+        </div>
+
+        <button onclick="location.reload()">
+
+            ACTUALIZAR
+
+        </button>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
