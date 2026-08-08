@@ -1,77 +1,65 @@
 from indicators import calculate_indicators
 
 
+from indicators import calculate_indicators
+
 def analyze_market(df):
 
     df = calculate_indicators(df)
-
     last = df.iloc[-1]
 
-    score = 0
+    bull = 0
+    bear = 0
     reasons = []
 
-    # ==========================
     # EMA
-    # ==========================
     if last["EMA9"] > last["EMA21"]:
-        score += 35
-        reasons.append("EMA9 arriba de EMA21")
+        bull += 35
+        reasons.append("EMA Alcista")
     else:
-        score -= 35
-        reasons.append("EMA9 debajo de EMA21")
+        bear += 35
+        reasons.append("EMA Bajista")
 
-    # ==========================
     # RSI
-    # ==========================
-    if last["RSI"] >= 55:
-        score += 15
+    if last["RSI"] >= 60:
+        bull += 20
         reasons.append("RSI Alcista")
-    elif last["RSI"] <= 45:
-        score -= 15
+    elif last["RSI"] <= 40:
+        bear += 20
         reasons.append("RSI Bajista")
     else:
         reasons.append("RSI Neutral")
 
-    # ==========================
     # MACD
-    # ==========================
-    if last["MACD"] > last["MACD_SIGNAL"] and last["MACD"] > 0:
-        score += 35
-        reasons.append("MACD Compra Confirmada")
-
-    elif last["MACD"] < last["MACD_SIGNAL"] and last["MACD"] < 0:
-        score -= 35
-        reasons.append("MACD Venta Confirmada")
-
+    if last["MACD"] > last["MACD_SIGNAL"]:
+        bull += 30
+        reasons.append("MACD Compra")
     else:
-        reasons.append("MACD Neutral")
+        bear += 30
+        reasons.append("MACD Venta")
 
-    # ==========================
-    # VOLUMEN
-    # ==========================
+    # Volumen
     if last["Volume"] > last["VOL_AVG"]:
-        score += 15
+        bull += 15
+        bear += 15
         reasons.append("Volumen Alto")
     else:
-        score -= 15
         reasons.append("Volumen Bajo")
 
-    # ==========================
-    # CONFIANZA
-    # ==========================
-    confidence = int((score + 100) / 2)
-    confidence = max(0, min(confidence, 100))
-
-    # ==========================
-    # PREDICCIÓN
-    # ==========================
-    if confidence < 50:
-        prediction = "NO OPERAR"
+    if bull > bear:
+        confidence = bull
+        prediction = "UP"
+    elif bear > bull:
+        confidence = bear
+        prediction = "DOWN"
     else:
-        if score >= 0:
-            prediction = "UP"
-        else:
-            prediction = "DOWN"
+        confidence = 50
+        prediction = "NO OPERAR"
+
+    if confidence < 60:
+        prediction = "NO OPERAR"
+
+    confidence = min(confidence, 100)
 
     return {
         "prediction": prediction,

@@ -1,40 +1,30 @@
+from datetime import datetime, timedelta
 from flask import Flask, jsonify, render_template
-from datetime import datetime
+
 
 from data import get_btc_price, get_market_data
 from strategy import analyze_market
 
 app = Flask(__name__)
 
-
 def next_candle():
-
     now = datetime.now()
 
-    minute = ((now.minute // 15) + 1) * 15
+    minutes_to_add = 15 - (now.minute % 15)
+    if minutes_to_add == 15 and now.second == 0:
+        minutes_to_add = 0
 
-    if minute >= 60:
+    nxt = (
+        now.replace(second=0, microsecond=0)
+        + timedelta(minutes=minutes_to_add)
+    )
 
-        nxt = now.replace(
-            hour=(now.hour + 1) % 24,
-            minute=0,
-            second=0,
-            microsecond=0
-        )
+    total = max(0, int((nxt - now).total_seconds()))
 
-    else:
+    minutes = total // 60
+    seconds = total % 60
 
-        nxt = now.replace(
-            minute=minute,
-            second=0,
-            microsecond=0
-        )
-
-    remaining = nxt - now
-
-    total = int(remaining.total_seconds())
-
-    return f"{total//60:02d}:{total%60:02d}"
+    return f"{minutes:02d}:{seconds:02d}"
 
 @app.route("/api/signal")
 def api_signal():
